@@ -1,10 +1,20 @@
-export const getAllQuestions = (req, res) => {
-    res.status(200).send(
-        {
-            id: "1",
-            question: "Quelle est la capitale de la France ?",
-            awnser: "Paris"
-        }); 
+import {db} from "../db/database.js"; 
+import {questions} from "../db/schema.js"
+
+export const getAllQuestions = async (req, res) => {
+    try{
+        const result = await db
+            .select()
+            .from(questions)
+            .orderBy('created_at', 'desc')
+
+        res.status(200).json(result);
+    }
+    catch(err){
+        res.status(500).send({
+            error: 'Failed to query questions'
+        });
+    }
 };
 
 
