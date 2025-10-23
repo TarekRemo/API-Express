@@ -15,7 +15,7 @@ export const getAllQuestions = async (req, res) => {
             error: 'Failed to query questions'
         });
     }
-};
+}; 
 
 
 export const postQuestions = (req, res) => {
