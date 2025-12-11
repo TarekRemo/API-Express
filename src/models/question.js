@@ -1,8 +1,8 @@
 import {z} from 'zod';
 
 export const createQuestionSchema = z.object({
-    question: z.string().min(1).max(255, 'question text must be at most 255 characters long'),
-    awnser: z.string().min(1).max(255),
+    questionText: z.string().min(1).max(255, 'question text must be at most 255 characters long'),
+    answer: z.string().min(1).max(255),
     difficulty: z.enum(['easy', 'medium', 'hard']),
 });
 

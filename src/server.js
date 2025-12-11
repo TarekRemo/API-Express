@@ -1,6 +1,7 @@
 import express from 'express';
 import questionsRouter from './routers/questions_router.js';
-import usersRouter from './routers/users_router.js'
+import usersRouter from './routers/users_router.js';
+import authRouter from './routers/auth_router.js';
 import logger from './middlewares/logger.js';
 
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,8 @@ app.use(logger);
 
 app.use('/questions', questionsRouter);
 app.use('/users', usersRouter);
+app.use('/auth', authRouter);
+
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

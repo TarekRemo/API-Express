@@ -1,5 +1,7 @@
 import {db} from "../db/database.js"; 
 import {questions} from "../db/schema.js"
+import { request, response } from 'express'
+import {eq} from 'drizzle-orm';
 
 export const getAllQuestions = async (req, res) => {
     try{
@@ -17,31 +19,65 @@ export const getAllQuestions = async (req, res) => {
     }
 }; 
 
+/**
+ * 
+ * @param {request} req 
+ * @param {response} res 
+ * @returns 
+ */
+export const createQuestion = async (req, res)=>{
+    const { questionText, answer, difficulty } = req.body // destructuration, on récupère les champs plutot que l'objet
 
-export const postQuestions = (req, res) => {
-
-    var questions = req.body;
-
-    if(!Array.isArray(questions)){
-        questions = [questions];
+    if(!questionText || !answer){
+        return res.status(400).send({ error: "question and answer are required" })
     }
-    
-    var isValid; 
-    var validQuestions = [];
 
-    questions.forEach(question => {
-        isValid = question.question && question.awnser; 
-        if(isValid){
-            validQuestions.push(question);
-        }
-    });
+    try {
+        const [newQuestion] = await db.insert(questions).values({
+            questionText,
+            answer,
+            difficulty,
+        }).returning()
 
-    return res.status(200).send(validQuestions);
+        res.status(201).json({
+            message: 'Question created',
+            data: newQuestion,
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            error: 'Failed to create question'
+        })
+    }
 }
 
+/**
+ * 
+ * @param {request} req 
+ * @param {response} res 
+ * @returns 
+ */
+export const deleteQuestion = async (req, res) => {
+    const {id} = req.params;
+     try{
 
-export const deleteQuestion = (req, res) => {
-    const {id} = req.params; 
-    
-    return res.status(200).send({message: `question ${id} deleted`});
+        const [deleted] = await db.delete(questions).where(eq(questions.id, id)).returning();
+        if(!deleted){
+            return res.status(404).json({
+                message: 'Question not found',
+                data: deleted,
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Question created',
+            data: result,
+        });
+        
+    }
+    catch(err){
+        res.status(500).send({
+            error: err.message
+        });
+    }   
 }
